@@ -1,0 +1,41 @@
+﻿<Window x:Class="ParserDesktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ParserDesktop"
+        mc:Ignorable="d"
+        Title="Parser" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.1*" />
+            <RowDefinition Height="0.08*" />
+            <RowDefinition Height="0.5*" />
+            <RowDefinition Height="0.4*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Label MinWidth="100" Content="Общее время работы:" />
+            <Label Name = "labelStopWatch" FontWeight="Bold" Padding="0 6 10 6"  Content="00:00:00" />
+            <Label MinWidth="100" Content="Время до следующего запроса: " />
+            <Label Name = "labelTimeRequest" FontWeight="Bold" Padding="0 6 10 6" Content="00:00:00" />
+            <Label MinWidth="100" Content="Найдено квартир: " />
+            <Label Name = "labelCountApartments" FontWeight="Bold" Padding="0 6 10 6" Content="0" />
+            <Label MinWidth="100" Content="Найдено ошибок: :" />
+            <Label Name = "labelCountErrors" FontWeight="Bold" Padding="0 6 10 6" Content="0" />
+        </StackPanel>
+        <StackPanel Grid.Row="0" Height="25" HorizontalAlignment="Center" Orientation="Horizontal">
+            <Label Content="Введите количество секунд между запросами (рекомендуемое значение 50) - "></Label>
+            <TextBox Name="textTimeRequest" SelectedText="50" MinWidth="30" Height="25" TextAlignment="Center" VerticalContentAlignment="Center" ></TextBox>
+            <Button Name="buttonStart" Click="Button_Start" Content="Запуск" Margin=" 5 0 0 0" Padding="2"/>
+            <CheckBox Name="checkBoxRU09" Content="RU09" IsChecked="True" VerticalAlignment="Center" Margin="5"></CheckBox>
+            <CheckBox Name="checkBoxAvito" Content="Avito" IsChecked="True" VerticalAlignment="Center" Margin="5"></CheckBox>
+        </StackPanel>
+        
+        <ScrollViewer Grid.Row="2">
+            <TextBox Name = "BlockApartments" IsReadOnly="True" BorderThickness="0" FontWeight="Bold" Padding="7" Text="Квартир не найдено" Margin="10" Background="Lavender"/>
+        </ScrollViewer>
+        <ScrollViewer Grid.Row="3">
+            <TextBox Name = "BlockErrors" IsReadOnly="True" BorderThickness="0" FontWeight="Bold" Padding="7" TextWrapping="Wrap" Text="Ошибок не обнаружено" Margin="10" Background="Gainsboro"/>
+        </ScrollViewer>
+    </Grid>
+</Window>

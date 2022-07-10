@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "dgSpecHash": "FgMijEVQ1yoBMdY9KJbTSyY0rlL7nOTGnblh3TVBT019xQismwI7bwuZbfk3AMZhaoy4HViRupn+bQOgyBn9Vg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Rogozilio\\RiderProjects\\ParserDesktop\\ParserDesktop\\ParserDesktop.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\esprima\\2.1.2\\esprima.2.1.2.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\htmlagilitypack\\1.11.43\\htmlagilitypack.1.11.43.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\jint\\3.0.0-beta-2038\\jint.3.0.0-beta-2038.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\microsoft.netcore.platforms\\5.0.0\\microsoft.netcore.platforms.5.0.0.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\microsoft.win32.systemevents\\5.0.0\\microsoft.win32.systemevents.5.0.0.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\newtonsoft.json\\13.0.2-beta1\\newtonsoft.json.13.0.2-beta1.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\restsharp\\108.0.2-alpha.0.1\\restsharp.108.0.2-alpha.0.1.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\system.drawing.common\\5.0.0\\system.drawing.common.5.0.0.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\system.reflection.emit\\4.7.0\\system.reflection.emit.4.7.0.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\system.text.json\\5.0.0\\system.text.json.5.0.0.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\system.threading.channels\\6.0.0\\system.threading.channels.6.0.0.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\telegram.bot\\18.0.0\\telegram.bot.18.0.0.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\telegram.bot.extensions.polling\\2.0.0-alpha.1\\telegram.bot.extensions.polling.2.0.0-alpha.1.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\tesseract\\4.1.1\\tesseract.4.1.1.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\tesseract.drawing\\4.1.1\\tesseract.drawing.4.1.1.nupkg.sha512",
+    "C:\\Users\\Rogozilio\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\5.0.17\\microsoft.netcore.app.host.win-x64.5.0.17.nupkg.sha512"
+  ],
+  "logs": []
+}
