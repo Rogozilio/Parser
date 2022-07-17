@@ -29,6 +29,7 @@
             <Button Name="buttonStart" Click="Button_Start" Content="Запуск" Margin=" 5 0 0 0" Padding="2"/>
             <CheckBox Name="checkBoxRU09" Content="RU09" IsChecked="True" VerticalAlignment="Center" Margin="5"></CheckBox>
             <CheckBox Name="checkBoxAvito" Content="Avito" IsChecked="True" VerticalAlignment="Center" Margin="5"></CheckBox>
+            <CheckBox Name="checkBoxYla" Content="Yla" IsChecked="True" VerticalAlignment="Center" Margin="5"></CheckBox>
         </StackPanel>
         
         <ScrollViewer Grid.Row="2">

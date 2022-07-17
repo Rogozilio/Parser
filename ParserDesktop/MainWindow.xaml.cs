@@ -14,6 +14,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using RestSharp;
 
 namespace ParserDesktop
 {
@@ -27,6 +30,7 @@ namespace ParserDesktop
         bool isReadyRequest;
         bool isIncludeRU09;
         bool isIncludeAvito;
+        bool isIncludeYla;
         DateTime timeClick;
         long valueTimeRequest;
         long timeRequest;
@@ -41,6 +45,8 @@ namespace ParserDesktop
         //ru09
         string urlRU09;
         ParserRU09 parserRU09;
+
+        ParserYla parserYla;
 
         // Etagi etagi;
 
@@ -64,6 +70,22 @@ namespace ParserDesktop
             //ru09
             urlRU09 = "https://www.tomsk.ru09.ru/realty/?type=1&otype=1&pubdate[sort]=desc";
             parserRU09 = new ParserRU09(urlRU09);
+            
+            //Yla
+            var urlYla =
+                "https://youla.ru/tomsk/nedvijimost/prodaja-kvartiri/posutochnaya-arenda-kvartir-ot-sobstvennikov?attributes[sort_field]=date_published";
+            parserYla = new ParserYla(urlYla);
+            
+            // var client = new RestClient("https://api-gw.youla.io/federation/graphql");
+            // var request = new RestRequest("", Method.Post);
+            // var requestJsonData =
+            //     "{ \"operationName\": \"catalogProductsBoard\", \"variables\": { \"sort\": \"DATE_PUBLISHED_DESC\", \"attributes\": [ { \"slug\": \"sort_field\", \"value\": null, \"from\": null, \"to\": null }, { \"slug\": \"sobstvennik_ili_agent\", \"value\": [ \"10705\" ], \"from\": null, \"to\": null }, { \"slug\": \"categories\", \"value\": [ \"prodaja-kvartiri\" ], \"from\": null, \"to\": null } ], \"datePublished\": null, \"location\": { \"latitude\": null, \"longitude\": null, \"city\": \"576d0619d53f3d80945f9805\", \"distanceMax\": null }, \"search\": \"\", \"cursor\": \"\"}, \"extensions\": { \"persistedQuery\": { \"version\": 1, \"sha256Hash\": \"bf7a22ef077a537ba99d2fb892ccc0da895c8454ed70358c0c7a18f67c84517f\" } } }";
+            // request.AddBody(requestJsonData, "application/json");
+            //
+            // var response = await client.ExecuteAsync(request).ConfigureAwait(false);
+            //
+            // var jsonData = (JObject)JsonConvert.DeserializeObject(response.Content);
+            // var result = jsonData["data"]["feed"]["items"][1]["product"]["url"];
 
             // var etagi = new Etagi();
             // etagi.CreateAd();
@@ -83,32 +105,18 @@ namespace ParserDesktop
 
                 isIncludeAvito = checkBoxAvito.IsChecked.Value;
                 isIncludeRU09 = checkBoxRU09.IsChecked.Value;
+                isIncludeYla = checkBoxYla.IsChecked.Value;
 
                 if (timeRequest == 0 && !isReadyRequest)
                 {
                     isReadyRequest = true;
-
-                    // var client = new RestClient("https://api-gw.youla.io/federation/graphql");
-                    // var request = new RestRequest("", Method.Post);
-                    // var requestJsonData =
-                    //     "{ \"operationName\": \"catalogProductsBoard\", \"variables\": { \"sort\": \"DATE_PUBLISHED_DESC\", \"attributes\": [ { \"slug\": \"sort_field\", \"value\": null, \"from\": null, \"to\": null }, { \"slug\": \"sobstvennik_ili_agent\", \"value\": [ \"10705\" ], \"from\": null, \"to\": null }, { \"slug\": \"categories\", \"value\": [ \"prodaja-kvartiri\" ], \"from\": null, \"to\": null } ], \"datePublished\": null, \"location\": { \"latitude\": null, \"longitude\": null, \"city\": \"576d0619d53f3d80945f9805\", \"distanceMax\": null }, \"search\": \"\", \"cursor\": \"\"}, \"extensions\": { \"persistedQuery\": { \"version\": 1, \"sha256Hash\": \"bf7a22ef077a537ba99d2fb892ccc0da895c8454ed70358c0c7a18f67c84517f\" } } }";
-                    // request.AddBody(requestJsonData, "application/json");
-                    //
-                    // var response = await client.ExecuteAsync(request).ConfigureAwait(false);
-                    //
-                    // var jsonData = (JObject)JsonConvert.DeserializeObject(response.Content);
-                    // var result = jsonData["data"]["feed"]["items"][1]["product"]["url"];
-                    // Console.WriteLine(result);
-                    //
-                    // var urlYla =
-                    //     "https://youla.ru/tomsk/nedvijimost/prodaja-kvartiri/posutochnaya-arenda-kvartir-ot-sobstvennikov?attributes[sort_field]=date_published";
-                    // var parserYla = new ParserYla(urlYla);
-                    // parserYla.Launch(ref dataForRequest);
-                    // DebugData.Show(dataForRequest);
+                    
                     await Task.Run(() =>
                     {
                         if(isIncludeRU09)
                             parserRU09.Launch(ref dataForRequest, bot);
+                        if(isIncludeYla)
+                            parserYla.Launch(ref dataForRequest, bot);
                         if(isIncludeAvito)
                             parserAvito.Launch(ref dataForRequest, bot);
                         
@@ -134,12 +142,14 @@ namespace ParserDesktop
             }
             catch (Exception exception)
             {
+                timeRequest = valueTimeRequest;
+                isReadyRequest = false;
                 countErrors++;
                 labelCountErrors.Content = countErrors.ToString();
                 labelCountErrors.Foreground = Brushes.Crimson;
-                buttonStart.Background = Brushes.Chartreuse;
-                BlockErrors.Text = "";
-                BlockErrors.Text += exception.Message + " " + exception.StackTrace;
+                if (BlockErrors.Text == "Ошибок не обнаружено")
+                    BlockErrors.Text = "";
+                BlockErrors.Text += exception.Message + " " + exception.StackTrace + "\n\n";
             }
         }
 

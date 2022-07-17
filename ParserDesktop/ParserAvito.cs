@@ -41,7 +41,7 @@ namespace ParserDesktop
             htmlItemNodes = _node.SelectNodes(".//div[@data-marker='item']");
 
             if (htmlItemNodes == null)
-                throw new Exception("Значение htmlItemNodes = null");
+                throw new Exception("Скорее всего Avito забанил ваш ip на 3-4 часа. Включите его позже.");
 
             foreach (var item in htmlItemNodes)
             {
