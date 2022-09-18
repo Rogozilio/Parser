@@ -29,14 +29,14 @@ namespace ParserDesktop
             _cookie = new CookieContainer();
             _listItemUrl = new List<string>();
             var topUrl = String.Empty;
-            
+
             _node = new HtmlWeb().Load(_url).DocumentNode;
             var htmlItemNodes = _node.SelectNodes(".//td[@class='last']");
             if (htmlItemNodes == null)
                 throw new Exception("Значение htmlItemNodes = null");
 
             //Console.WriteLine(htmlItemNodes.Count);
-            
+
             foreach (var item in htmlItemNodes)
             {
                 var itemUrl = item.SelectSingleNode(".//*[@class='visited_ads']").Attributes["href"]
@@ -46,36 +46,40 @@ namespace ParserDesktop
                     _oldItemUrl = itemUrl;
                     break;
                 }
+
                 if (_oldItemUrl != itemUrl)
                 {
                     if (topUrl == String.Empty)
                         topUrl = itemUrl;
                 }
                 else break;
-                
+
                 var agentstvo = item.SelectSingleNode(".//p[@class='absmiddle']")
                     .SelectNodes(".//span[@class='nobr']");
-            
+
                 var isAgentstvo = !(agentstvo == null || agentstvo.Count == 2);
-            
+
                 if (isAgentstvo)
                     continue;
-                
+
                 _listItemUrl.Add("https://www.tomsk.ru09.ru" + itemUrl);
             }
+
             _oldItemUrl = (topUrl != String.Empty) ? topUrl : _oldItemUrl;
         }
 
         public void Launch(ref List<DataForRequest> data, TelegramBot bot)
         {
             GetItems();
-            //_listItemUrl.Add("https://www.tomsk.ru09.ru/realty?subaction=detail&id=4798704");
+            _listItemUrl.Add("https://www.tomsk.ru09.ru/realty?subaction=detail&id=4792942");
             foreach (var itemUrl in _listItemUrl)
             {
+                _node = new HtmlWeb().Load(itemUrl).DocumentNode;
+                if (!IsNewAd()) break;
+                
                 GetCookie(itemUrl);
                 var newData = new DataForRequest();
                 newData.Ref = itemUrl;
-                _node = new HtmlWeb().Load(itemUrl).DocumentNode;
                 newData.Name = GetName();
                 newData.Phone = GetPhone();
                 newData.Price = GetPrice();
@@ -89,6 +93,28 @@ namespace ParserDesktop
                 data.Add(newData);
             }
         }
+
+        private bool IsNewAd()
+        {
+            if (_node == null) return false;
+
+            var sumViewsPerDays = 0;
+            var hrefStatistics = "https://www.tomsk.ru09.ru" + _node.SelectSingleNode("//*[text()[contains(., 'Статистика показов')]]")
+                .Attributes["href"].Value;
+            var nodeStatistics = new HtmlWeb().Load(hrefStatistics).DocumentNode;
+            var nodesPerMonth = nodeStatistics.SelectNodes(".//a[@class='graph_x_bar']");
+            for (int i = 0; i < nodesPerMonth.Count; i++)
+            {
+                var viewsPerDay = int.Parse(nodesPerMonth[i].Attributes["title"].Value);
+                sumViewsPerDays += viewsPerDay;
+
+                if (i == nodesPerMonth.Count - 1)
+                    sumViewsPerDays -= viewsPerDay;
+            }
+
+            return sumViewsPerDays == 0;
+        }
+
         public string GetName()
         {
             var result = _node.SelectSingleNode("//*[text()[contains(., 'Контактное')]]");
@@ -102,8 +128,9 @@ namespace ParserDesktop
             var code = _node.OuterHtml.Split("SEC_CODE = '")[1].Split("'")[0];
             var salt = _node.OuterHtml.Split("decrypt_phone_(")[1].Split(")")[0];
             var backEnd = GetBackEndForPhone(code, salt);
-            
-            var frontEnd = _node.OuterHtml.Split("window['phone" + salt + "'] = '")[1].Split("'")[0];
+
+            var frontEnd =
+                _node.OuterHtml.Split("window['phone" + salt + "'] = '")[1].Split("'")[0];
             var result = DecodingPhone(frontEnd, backEnd.Result);
             return result;
         }
@@ -174,6 +201,7 @@ namespace ParserDesktop
 
             return content;
         }
+
         private async Task<string> GetBackEndForPhone(string okeyData, string saltData)
         {
             var client = new RestClient("https://www.tomsk.ru09.ru/ajax.php?");
@@ -396,7 +424,7 @@ function getNumber(strBack, strFront){
 }
 ";
             var engine = new Engine().Execute(ebanyScript);
-            
+
             return engine.Invoke("getNumber", backEnd, frontEnd).ToString();
         }
     }

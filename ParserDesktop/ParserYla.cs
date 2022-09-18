@@ -18,6 +18,8 @@ namespace ParserDesktop
         private string _url;
         private string _oldItemUrl;
         private List<string> _listItemUrl;
+        private List<string> _listRepeatItem;
+        private bool _isItemRepeat;
         private string _allTextPage;
         private RestClient client;
 
@@ -27,6 +29,8 @@ namespace ParserDesktop
             _url = url;
             _oldItemUrl = String.Empty;
             _listItemUrl = new List<string>();
+            _listRepeatItem = new List<string>();
+            _isItemRepeat = false;
         }
 
         private void GetItems()
@@ -53,6 +57,7 @@ namespace ParserDesktop
 
             for(var i = 1; i <= countItems; i++)
             {
+                _isItemRepeat = false;
                 var itemUrl = allItems[i]["product"]["url"].Value<string>();
 
                 if (_oldItemUrl == String.Empty)
@@ -65,6 +70,17 @@ namespace ParserDesktop
                 {
                     if (topUrl == String.Empty)
                         topUrl = itemUrl;
+                    
+                    foreach (var item in _listRepeatItem)
+                    {
+                        if (item == itemUrl)
+                            _isItemRepeat = true;
+                    }
+
+                    if (!_isItemRepeat)
+                        _listRepeatItem.Add(itemUrl);
+                    else break;
+                    
                     var nextUrl = itemUrl;
                     _listItemUrl.Add("https://youla.ru" + nextUrl);
                 }
@@ -74,16 +90,11 @@ namespace ParserDesktop
             _oldItemUrl = (topUrl != String.Empty) ? topUrl : _oldItemUrl;
         }
 
-        private void SetDataForRequest()
-        {
-            
-        }
-
         public void Launch(ref List<DataForRequest> data, TelegramBot bot)
         {
             GetItems();
             // _listItemUrl.Add(
-            //     "https://youla.ru/tomsk/nedvijimost/prodaja-kvartiri/kvartira-1-komnata-39-m2-62988392b19669424b1bd730");
+            //     "https://youla.ru/tomsk/nedvijimost/prodaja-kvartiri/kvartira-3-komnaty-40-m2-62cd47dfd90a0411aa55e57b");
             foreach (var itemUrl in _listItemUrl)
             {
                 var newData = new DataForRequest();
@@ -173,8 +184,13 @@ namespace ParserDesktop
 
         public string GetKitchenArea()
         {
-            var kitchenArea = _allTextPage.Split("realty_ploshad_kuhni\",\"values")[1].Split("value\":\"")[1].Split("\"")[0];
-            return kitchenArea.Substring(0, kitchenArea.Length - 2);;
+            if (_allTextPage.Contains("realty_ploshad_kuhni\",\"values"))
+            {
+               var kitchenArea = _allTextPage.Split("realty_ploshad_kuhni\",\"values")[1].Split("value\":\"")[1].Split("\"")[0]; 
+               return kitchenArea.Substring(0, kitchenArea.Length - 2);
+            }
+
+            return "Не указано";
         }
 
         public string GetRenovation()

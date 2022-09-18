@@ -16,6 +16,8 @@ namespace ParserDesktop
         private List<string> _listItemUrl;
         private string _url;
         private string _oldItemUrl;
+        private List<string> _listRepeatItem;
+        private bool _isItemRepeat;
         private HtmlWeb _htmlWeb;
 
         public ParserAvito(string url)
@@ -25,6 +27,8 @@ namespace ParserDesktop
             _url = url;
             _oldItemUrl = String.Empty;
             _htmlWeb = new HtmlWeb();
+            _listRepeatItem = new List<string>();
+            _isItemRepeat = false;
         }
 
         private void GetItems()
@@ -41,7 +45,8 @@ namespace ParserDesktop
             htmlItemNodes = _node.SelectNodes(".//div[@data-marker='item']");
 
             if (htmlItemNodes == null)
-                throw new Exception("Скорее всего Avito забанил ваш ip на 3-4 часа. Включите его позже.");
+                throw new Exception(
+                    "Скорее всего Avito забанил ваш ip на 3-4 часа. Включите его позже.");
 
             foreach (var item in htmlItemNodes)
             {
@@ -56,8 +61,21 @@ namespace ParserDesktop
 
                 if (_oldItemUrl != itemUrl)
                 {
+                    _isItemRepeat = false;
+                    
                     if (topUrl == String.Empty)
                         topUrl = itemUrl;
+
+                    foreach (var itemRepeat in _listRepeatItem)
+                    {
+                        if (itemRepeat == itemUrl)
+                            _isItemRepeat = true;
+                    }
+
+                    if (!_isItemRepeat)
+                        _listRepeatItem.Add(itemUrl);
+                    else break;
+
                     _listItemUrl.Add("https://www.avito.ru" + itemUrl);
                 }
                 else break;
@@ -69,11 +87,12 @@ namespace ParserDesktop
         public void Launch(ref List<DataForRequest> data, TelegramBot bot)
         {
             GetItems();
-            //_listItemUrl.Add("https://www.avito.ru/tomsk/kvartiry/1-k._kvartira_47m_1010et._2485898141");
+            //_listItemUrl.Add("https://www.avito.ru/tomsk/kvartiry/2-k._kvartira_54m_39et._2312095313");
             foreach (var itemUrl in _listItemUrl)
             {
                 var newData = new DataForRequest();
                 _node = _htmlWeb.Load(itemUrl).DocumentNode;
+                if (!IsNewAd()) break;
                 newData.Name = GetName();
                 newData.Phone = GetPhone();
                 newData.Price = GetPrice();
@@ -87,6 +106,21 @@ namespace ParserDesktop
                 bot.Execute(newData.All);
                 data.Add(newData);
             }
+        }
+
+        private bool IsNewAd()
+        {
+            if (_node == null) return false;
+
+            var totalViews = _node.SelectSingleNode(".//span[@data-marker='item-view/total-views']")
+                .InnerText.Split('п')[0];
+            var todayViews =
+                _node.SelectSingleNode(".//span[@data-marker='item-view/today-views']").InnerText
+                    .Split('+')[1].Split('с')[0];
+            
+            if (totalViews == todayViews)
+                return true;
+            return false;
         }
 
         public string GetName()

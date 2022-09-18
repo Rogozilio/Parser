@@ -29,7 +29,7 @@ namespace ParserDesktop
 
         public async Task Execute(string text)
         {
-            //await bot.SendTextMessageAsync("1062249684", text);
+           //await bot.SendTextMessageAsync("1062249684", text);
         }
         
         // public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
